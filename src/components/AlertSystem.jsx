@@ -9,7 +9,7 @@ export default function AlertSystem({ machineData }) {
     machineData.forEach((m) => {
       const bucket = Math.floor(m.failureRisk / 5);
       const key    = `${m.id}-${bucket}`;
-      if (m.failureRisk > 70 && !seenRef.current.has(key)) {
+      if (m.failureRisk > 90 && !seenRef.current.has(key)) {
         seenRef.current.add(key);
         const alert = {
           id:        `${m.id}-${Date.now()}`,

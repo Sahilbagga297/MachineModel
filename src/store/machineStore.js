@@ -11,18 +11,18 @@
 // ────────────────────────────────────────────────────────────────────────
 
 export const MACHINE_CONFIGS = [
-  { id: 'M1', label: 'CNC Lathe #1',     position: [-6, 0.5, -4] },
+  { id: 'M1', label: 'CNC Lathe #1',     position: [-5, 0.5, -4] },
   { id: 'M2', label: 'Press Unit #2',    position: [ 0, 0.5, -4] },
-  { id: 'M3', label: 'Welding Bot #3',   position: [ 6, 0.5, -4] },
-  { id: 'M4', label: 'Conveyor #4',      position: [-6, 0.5,  4] },
+  { id: 'M3', label: 'Welding Bot #3',   position: [ 5, 0.5, -4] },
+  { id: 'M4', label: 'Conveyor #4',      position: [-5, 0.5,  4] },
   { id: 'M5', label: 'Drill Station #5', position: [ 0, 0.5,  4] },
-  { id: 'M6', label: 'Assembly #6',      position: [ 6, 0.5,  4] },
+  { id: 'M6', label: 'Assembly #6',      position: [ 5, 0.5,  4] },
 ];
 
 /** Derive status from failure risk */
 export function getStatus(failureRisk) {
   if (failureRisk <= 30) return 'Healthy';
-  if (failureRisk <= 70) return 'Warning';
+  if (failureRisk <= 80) return 'Warning';
   return 'Critical';
 }
 
@@ -45,16 +45,16 @@ export function generateTelemetry(prevData, criticalId) {
     const prev = prevData.find((d) => d.id === cfg.id);
     const isCritical = cfg.id === criticalId;
 
-    const temp      = clamp((prev?.temperature ?? 65)  + rand(-3, 4),  40, 120);
-    const vibration = clamp((prev?.vibration   ?? 0.5) + rand(-0.05, 0.08), 0, 3);
-    const rpm       = clamp((prev?.rpm         ?? 1500)+ rand(-50, 60), 800, 3500);
-    const humidity  = clamp((prev?.humidity    ?? 50)  + rand(-2, 2),   20, 90);
+    const temp      = clamp((prev?.temperature ?? 65)  + rand(-6, 8),   40, 120);
+    const vibration = clamp((prev?.vibration   ?? 0.5) + rand(-0.15, 0.2), 0, 3);
+    const rpm       = clamp((prev?.rpm         ?? 1500)+ rand(-120, 150), 800, 3500);
+    const humidity  = clamp((prev?.humidity    ?? 50)  + rand(-4, 4),   20, 90);
 
     let failureRisk = prev?.failureRisk ?? Math.floor(Math.random() * 30);
     if (isCritical) {
-      failureRisk = clamp(failureRisk + rand(3, 8), 0, 100);
+      failureRisk = clamp(failureRisk + rand(8, 18), 0, 100);
     } else {
-      failureRisk = clamp(failureRisk + rand(-2, 2), 0, 60);
+      failureRisk = clamp(failureRisk + rand(-8, 10), 0, 90);
     }
 
     return {

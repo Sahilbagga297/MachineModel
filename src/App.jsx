@@ -18,7 +18,7 @@ export default function App() {
   useEffect(() => {
     const iv = setInterval(() => {
       cycleRef.current++;
-      if (cycleRef.current % 8 === 0) {
+      if (cycleRef.current % 5 === 0) {
         const pick = MACHINE_CONFIGS[Math.floor(Math.random() * MACHINE_CONFIGS.length)].id;
         setCriticalTarget(pick);
       }
@@ -27,7 +27,7 @@ export default function App() {
         next.forEach(onMachineUpdate);
         return next;
       });
-    }, 2000);
+    }, 800);
     return () => clearInterval(iv);
   }, [criticalTarget]);
 

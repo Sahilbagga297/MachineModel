@@ -1,112 +1,145 @@
 import React from 'react';
 
 /**
- * FactoryLighting – layered industrial lighting:
- *  - Ambient base
- *  - Key directional light (sun-like)
- *  - Ceiling strip light fixtures (warm white)
- *  - Accent fill lights
- *  - Subtle floor bounce
+ * FactoryLighting – layered industrial lighting designed to work
+ * inside a closed factory building with a solid concrete roof.
+ *
+ * Strategy:
+ *  1. hemisphereLight as base fill (sky/ground, no shadows)
+ *  2. directionalLights from FRONT and SIDES (not top) so
+ *     they aren't blocked by the solid roof above
+ *  3. Grid of interior point lights at Y=8 for machine illumination
+ *  4. Physical ceiling strip light fixtures at Y=9.5
  */
 export default function FactoryLighting() {
-  // Ceiling strip rows: [x, z] pairs for strip light fixtures
+  // 9 ceiling strip positions in a 3×3 grid
   const stripPositions = [
     [-8, -8], [0, -8], [8, -8],
     [-8,  0], [0,  0], [8,  0],
     [-8,  8], [0,  8], [8,  8],
   ];
 
+  // Interior point lights – placed at machine level to ensure visibility
+  const interiorLights = [
+    [-6, 8, -4],  // above M1
+    [ 0, 8, -4],  // above M2
+    [ 6, 8, -4],  // above M3
+    [-6, 8,  4],  // above M4
+    [ 0, 8,  4],  // above M5
+    [ 6, 8,  4],  // above M6
+    [ 0, 8,  0],  // centre fill
+  ];
+
   return (
     <>
-      {/* ── Global ambient (very low, factory feel) ── */}
-      <ambientLight intensity={0.30} color="#9ab8d8" />
-
-      {/* ── Key directional light (simulates high windows / overhead) ── */}
-      <directionalLight
-        position={[10, 15, 10]}
-        intensity={1.4}
-        color="#ddeeff"
-        castShadow
-        shadow-mapSize={[2048, 2048]}
-        shadow-camera-far={60}
-        shadow-camera-left={-18}
-        shadow-camera-right={18}
-        shadow-camera-top={18}
-        shadow-camera-bottom={-18}
-        shadow-bias={-0.001}
+      {/* ── Sky/ground hemisphere – base fill (no shadows) ── */}
+      <hemisphereLight
+        args={['#c8dff5', '#2a3a50', 2.5]}
+        position={[0, 10, 0]}
       />
 
-      {/* ── Secondary fill from opposite side ── */}
+      {/* ── Strong ambient to fill all dark crevices ── */}
+      <ambientLight intensity={1.8} color="#d0e4f5" />
+
+      {/* ── Front directional key (from camera side Z+, below roof) ── */}
       <directionalLight
-        position={[-8, 12, -8]}
-        intensity={0.5}
-        color="#8090a8"
+        position={[0, 8, 20]}
+        intensity={3.5}
+        color="#e8f2ff"
         castShadow={false}
       />
 
-      {/* ── Ceiling industrial strip light fixtures ── */}
+      {/* ── Side-left fill ── */}
+      <directionalLight
+        position={[-18, 6, 0]}
+        intensity={2.0}
+        color="#ccddf0"
+        castShadow={false}
+      />
+
+      {/* ── Side-right fill ── */}
+      <directionalLight
+        position={[18, 6, 0]}
+        intensity={2.0}
+        color="#ccddf0"
+        castShadow={false}
+      />
+
+      {/* ── Back-top directional (above machines but angled from front-top) ── */}
+      <directionalLight
+        position={[4, 18, 14]}
+        intensity={2.5}
+        color="#ffffff"
+        castShadow
+        shadow-mapSize={[2048, 2048]}
+        shadow-camera-far={50}
+        shadow-camera-left={-16}
+        shadow-camera-right={16}
+        shadow-camera-top={16}
+        shadow-camera-bottom={-16}
+        shadow-bias={-0.001}
+      />
+
+      {/* ── Per-machine interior point lights (inside factory, below roof) ── */}
+      {interiorLights.map(([x, y, z]) => (
+        <pointLight
+          key={`il-${x}-${z}`}
+          position={[x, y, z]}
+          color="#ffffff"
+          intensity={3.0}
+          distance={14}
+          castShadow={false}
+        />
+      ))}
+
+      {/* ── Physical ceiling strip light fixtures at Y=9.5 ── */}
       {stripPositions.map(([x, z]) => (
         <CeilingStripLight key={`strip-${x}-${z}`} x={x} z={z} />
       ))}
 
-      {/* ── Accent / atmosphere lights ── */}
-      {/* Cool blue from back wall */}
-      <pointLight position={[0, 9, -13]} color="#4070b8" intensity={0.8} distance={18} />
-      {/* Warm corner accents */}
-      <pointLight position={[-13, 7, -13]} color="#304060" intensity={0.5} distance={12} />
-      <pointLight position={[ 13, 7, -13]} color="#304060" intensity={0.5} distance={12} />
-      {/* Floor bounce (low, soft) */}
-      <pointLight position={[0, 0.3, 0]} color="#1a2840" intensity={0.4} distance={20} />
+      {/* ── Accent atmosphere lights ── */}
+      <pointLight position={[0, 7, -12]} color="#5080c8" intensity={1.2} distance={20} />
+      <pointLight position={[-12, 5, -12]} color="#304060" intensity={0.8} distance={15} />
+      <pointLight position={[12, 5, -12]}  color="#304060" intensity={0.8} distance={15} />
     </>
   );
 }
 
 /**
  * Individual ceiling strip light unit:
- * – Physical fixture mesh
- * – Glowing white tube
- * – Point light that casts shadows (soft)
+ * – Physical fixture mesh at Y=9.5 (below concrete roof)
+ * – Glowing emissive tube
+ * – Point light downward
  */
 function CeilingStripLight({ x, z }) {
-  const fixtureY = 11.5;
+  const fixtureY = 9.5; // below the concrete roof slab (top at Y=10.8)
 
   return (
     <group position={[x, fixtureY, z]}>
       {/* Fixture housing */}
-      <mesh castShadow>
+      <mesh>
         <boxGeometry args={[1.8, 0.12, 0.28]} />
         <meshStandardMaterial color="#2a3344" roughness={0.4} metalness={0.8} />
       </mesh>
 
-      {/* Light tube (glowing) */}
+      {/* Glowing LED tube face */}
       <mesh position={[0, -0.07, 0]}>
         <boxGeometry args={[1.6, 0.05, 0.22]} />
         <meshStandardMaterial
           color="#e8f0ff"
           emissive="#e8f0ff"
-          emissiveIntensity={2.8}
+          emissiveIntensity={3.0}
           roughness={0}
           toneMapped={false}
         />
       </mesh>
 
-      {/* Light source (cast shadow) */}
+      {/* Primary downward point light */}
       <pointLight
         position={[0, -0.5, 0]}
         color="#ffffff"
-        intensity={1.8}
-        distance={11}
-        castShadow
-        shadow-mapSize={[512, 512]}
-        shadow-bias={-0.005}
-      />
-
-      {/* Subtle warm halo */}
-      <pointLight
-        position={[0, -0.2, 0]}
-        color="#ffe8c8"
-        intensity={0.4}
-        distance={6}
+        intensity={4.5}
+        distance={18}
         castShadow={false}
       />
     </group>
