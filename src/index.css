@@ -17,13 +17,19 @@
 /* ── Reset ──────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html, body, #root {
-  width: 100%; height: 100%;
-  overflow: hidden;
+html, body {
+  width: 100%;
+  min-height: 100%;
   background: var(--bg-deep);
   color: var(--text);
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Dashboard route needs fixed/full height; homepage needs scroll */
+#root {
+  width: 100%;
+  height: 100%;
 }
 
 /* ── Scrollbar ───────────────────────────────────────────────────────── */

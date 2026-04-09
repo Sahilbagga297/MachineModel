@@ -112,7 +112,7 @@ export default function FactoryLighting() {
  * – Point light downward
  */
 function CeilingStripLight({ x, z }) {
-  const fixtureY = 9.5; // below the concrete roof slab (top at Y=10.8)
+  const fixtureY = 9.8; // below the concrete roof slab (top at Y=10.8)
 
   return (
     <group position={[x, fixtureY, z]}>
