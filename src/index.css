@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* ── Design tokens ─────────────────────────────────────────────────── */
+/* ── Design tokens (dark – dashboard) ──────────────────────────────── */
 :root {
   --bg-deep:   #060e1c;
   --bg-card:   #0d1626;
@@ -12,18 +12,40 @@
   --text:      #f1f5f9;
   --muted:     #475569;
   --border:    #0f2a45;
+
+  /* Homepage bright palette */
+  --primary-blue:    #2563EB;
+  --secondary-cyan:  #06B6D4;
+  --success-green:   #22C55E;
+  --warning-amber:   #F59E0B;
+  --critical-red:    #EF4444;
+  --bg-light:        #F8FAFC;
+  --bg-white:        #FFFFFF;
+  --text-dark:       #0F172A;
+  --text-body:       #334155;
+  --text-muted:      #64748B;
+  --border-light:    #E2E8F0;
+  --border-lighter:  #F1F5F9;
 }
 
 /* ── Reset ──────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html, body {
+html {
+  width: 100%;
+  min-height: 100%;
+  scroll-behavior: auto; /* Lenis handles smooth scroll */
+}
+
+body {
   width: 100%;
   min-height: 100%;
   background: var(--bg-deep);
   color: var(--text);
   font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* Dashboard route needs fixed/full height; homepage needs scroll */
@@ -33,12 +55,12 @@ html, body {
 }
 
 /* ── Scrollbar ───────────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary-blue); }
 
-/* ── Keyframes ───────────────────────────────────────────────────────── */
+/* ── Keyframes — existing dashboard ────────────────────────────────── */
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.2; }
@@ -59,6 +81,51 @@ html, body {
   to   { opacity: 1; transform: translateY(0);   }
 }
 
+/* ── Keyframes — cinematic homepage ────────────────────────────────── */
+@keyframes floatBlob1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25%      { transform: translate(30px, -40px) scale(1.05); }
+  50%      { transform: translate(-20px, -80px) scale(0.95); }
+  75%      { transform: translate(-40px, -20px) scale(1.02); }
+}
+@keyframes floatBlob2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(-50px, 30px) scale(1.08); }
+  66%      { transform: translate(40px, -50px) scale(0.96); }
+}
+@keyframes floatBlob3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  30%      { transform: translate(60px, 20px) scale(0.94); }
+  60%      { transform: translate(-30px, 60px) scale(1.06); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes breathe {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+  50%      { box-shadow: 0 0 24px 4px rgba(37, 99, 235, 0.12); }
+}
+
+@keyframes dataFlow {
+  0%   { transform: translateX(-100%); opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes scrollBounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(8px); }
+}
+
+@keyframes iconReveal {
+  from { transform: scale(0.6) rotate(-15deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
 /* ── Utility classes ─────────────────────────────────────────────────── */
 .blink        { animation: blink 1.4s ease-in-out infinite; }
 .animate-ping { animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite; }
@@ -72,6 +139,24 @@ html, body {
   border: 1px solid #0f2a45;
 }
 
+.glass-light {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
 /* ── Recharts overrides ──────────────────────────────────────────────── */
 .recharts-cartesian-axis-tick-value { font-family: 'JetBrains Mono', monospace !important; }
 .recharts-tooltip-wrapper { outline: none !important; }
+
+/* ── Homepage typography ──────────────────────────────────────────────── */
+.font-hero {
+  font-family: 'Montserrat', 'Inter', sans-serif;
+}
+.font-heading {
+  font-family: 'Poppins', 'Inter', sans-serif;
+}
+.font-body {
+  font-family: 'Inter', system-ui, sans-serif;
+}

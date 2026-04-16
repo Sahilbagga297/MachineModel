@@ -2,14 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { Cpu, Wifi, Database, Brain, Activity } from 'lucide-react';
 
-const STATUS_MESSAGES = [
-  'Initializing factory sensors...',
-  'Loading 3D model assets...',
-  'Connecting to telemetry streams...',
-  'Calibrating AI prediction models...',
-  'Establishing real-time data pipeline...',
-  'Rendering digital twin environment...',
-  'Dashboard ready.',
+const PHASES = [
+  { msg: 'Connecting Sensors...',       icon: Wifi,     color: '#06B6D4' },
+  { msg: 'Streaming Data...',           icon: Database, color: '#8B5CF6' },
+  { msg: 'Initializing AI Models...',   icon: Brain,    color: '#EC4899' },
+  { msg: 'Rendering Digital Twin...',   icon: Activity, color: '#38BDF8' },
+  { msg: 'Launching Dashboard...',      icon: Cpu,      color: '#22C55E' },
 ];
 
 export default function LoadingScreen({ onComplete }) {
@@ -18,17 +16,21 @@ export default function LoadingScreen({ onComplete }) {
   const percentRef    = useRef();
   const msgRef        = useRef();
   const spinnerRef    = useRef();
-  const [msgIndex, setMsgIndex] = useState(0);
+  const iconRefs      = useRef([]);
+  const [phaseIndex, setPhaseIndex] = useState(0);
 
   useEffect(() => {
+    /* Disable Lenis smooth scroll during loading */
+    if (window.__lenis) window.__lenis.stop();
+
     const counter  = { val: 0 };
-    const msgTimes = [0, 0.5, 1.0, 1.6, 2.2, 2.9, 3.4];
-    const duration = 3.6;
+    const duration = 4.0;
+    const phaseInterval = duration / PHASES.length;
 
     const tl = gsap.timeline({
       onComplete: () => {
         gsap.to(containerRef.current, {
-          opacity: 0, scale: 1.03, duration: 0.5, ease: 'power2.in',
+          opacity: 0, scale: 1.04, duration: 0.6, ease: 'power2.in',
           onComplete: onComplete,
         });
       },
@@ -37,13 +39,13 @@ export default function LoadingScreen({ onComplete }) {
     /* entrance */
     tl.fromTo(containerRef.current,
       { opacity: 0 },
-      { opacity: 1, duration: 0.4, ease: 'power2.out' }
+      { opacity: 1, duration: 0.5, ease: 'power2.out' }
     );
 
     /* progress bar fill */
     tl.to(barFillRef.current, {
       scaleX: 1, duration, ease: 'power1.inOut', transformOrigin: 'left center',
-    }, '+=0.1');
+    }, '+=0.15');
 
     /* counter 0 → 100 */
     tl.to(counter, {
@@ -53,15 +55,30 @@ export default function LoadingScreen({ onComplete }) {
       },
     }, '<');
 
-    /* cycling status messages */
-    msgTimes.forEach((t, i) => {
+    /* Phase transitions */
+    PHASES.forEach((phase, i) => {
+      const t = i * phaseInterval;
       tl.call(() => {
-        setMsgIndex(i);
+        setPhaseIndex(i);
+
+        /* Animate status text */
         if (msgRef.current) {
           gsap.fromTo(msgRef.current,
-            { opacity: 0, y: 8 },
-            { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }
+            { opacity: 0, y: 10 },
+            { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }
           );
+        }
+
+        /* Light up this phase's icon */
+        const iconEl = iconRefs.current[i];
+        if (iconEl) {
+          gsap.to(iconEl, {
+            borderColor: `${phase.color}60`,
+            background: `${phase.color}20`,
+            boxShadow: `0 0 20px ${phase.color}30`,
+            duration: 0.4,
+            ease: 'power2.out',
+          });
         }
       }, null, t);
     });
@@ -129,7 +146,7 @@ export default function LoadingScreen({ onComplete }) {
       ))}
 
       {/* Main content */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 32, zIndex: 1, width: '100%', maxWidth: 480 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 36, zIndex: 1, width: '100%', maxWidth: 480 }}>
 
         {/* Logo + Spinner */}
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -169,24 +186,39 @@ export default function LoadingScreen({ onComplete }) {
           </p>
         </div>
 
-        {/* Status icons row */}
-        <div style={{ display: 'flex', gap: 20 }}>
-          {[Wifi, Database, Brain, Activity].map((Icon, i) => (
-            <div key={i} style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-            }}>
-              <div style={{
-                width: 40, height: 40,
-                background: 'rgba(56,189,248,0.08)',
-                border: '1px solid rgba(56,189,248,0.2)',
-                borderRadius: 10,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                animation: `iconPulse ${1.5 + i * 0.3}s ease-in-out infinite`,
+        {/* Status icons row — phase-aware highlighting */}
+        <div style={{ display: 'flex', gap: 16 }}>
+          {PHASES.map((phase, i) => {
+            const Icon = phase.icon;
+            const isActive = i <= phaseIndex;
+            return (
+              <div key={i} style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
               }}>
-                <Icon size={18} color="#38bdf8" />
+                <div
+                  ref={(el) => (iconRefs.current[i] = el)}
+                  style={{
+                    width: 44, height: 44,
+                    background: isActive ? `${phase.color}15` : 'rgba(56,189,248,0.06)',
+                    border: `1px solid ${isActive ? `${phase.color}40` : 'rgba(56,189,248,0.15)'}`,
+                    borderRadius: 12,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'all 0.4s ease',
+                  }}
+                >
+                  <Icon size={18} color={isActive ? phase.color : 'rgba(56,189,248,0.4)'} />
+                </div>
+                <div style={{
+                  fontSize: 8, fontFamily: 'monospace', letterSpacing: '0.1em',
+                  color: isActive ? phase.color : '#1e3a5f',
+                  transition: 'color 0.4s ease',
+                  fontWeight: isActive ? 700 : 400,
+                }}>
+                  {i + 1}/{PHASES.length}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Progress section */}
@@ -194,7 +226,7 @@ export default function LoadingScreen({ onComplete }) {
           {/* Percentage */}
           <div style={{
             display: 'flex', justifyContent: 'space-between',
-            marginBottom: 10, alignItems: 'baseline',
+            marginBottom: 12, alignItems: 'baseline',
           }}>
             <span style={{ color: '#475569', fontSize: 11, letterSpacing: '0.2em', fontFamily: 'monospace' }}>
               LOADING
@@ -223,14 +255,26 @@ export default function LoadingScreen({ onComplete }) {
             }} />
           </div>
 
+          {/* Phase markers */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, padding: '0 1px' }}>
+            {PHASES.map((_, i) => (
+              <div key={i} style={{
+                width: 4, height: 4, borderRadius: '50%',
+                background: i <= phaseIndex ? '#38bdf8' : 'rgba(56,189,248,0.2)',
+                transition: 'background 0.4s ease',
+              }} />
+            ))}
+          </div>
+
           {/* Status message */}
           <p ref={msgRef} style={{
-            marginTop: 16,
-            color: '#64748b', fontSize: 13,
+            marginTop: 18,
+            color: '#64748b', fontSize: 14,
             textAlign: 'center', fontFamily: 'monospace',
-            letterSpacing: '0.05em', minHeight: 20,
+            letterSpacing: '0.05em', minHeight: 22,
+            fontWeight: 500,
           }}>
-            {STATUS_MESSAGES[msgIndex]}
+            {PHASES[phaseIndex]?.msg}
           </p>
         </div>
       </div>
