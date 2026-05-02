@@ -34,7 +34,7 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, [isHome]);
 
-  const isActive = (path) => location.pathname === path;
+  
 
   /* ── Style variants ──────────────────────────────────────────── */
   const isDark = !isHome;
