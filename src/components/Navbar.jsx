@@ -41,7 +41,7 @@ export default function Navbar() {
   const bg = isDark
     ? 'rgba(6, 14, 28, 0.92)'
     : scrolled
-      ? 'rgba(255, 255, 255, 0.85)'
+      ? 'rgba(255, 255, 255)'
       : 'rgba(255, 255, 255, 0.6)';
 
   const borderColor = isDark
