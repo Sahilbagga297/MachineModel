@@ -114,7 +114,7 @@ export default function Navbar() {
 
       {/* ── Centre badge ── */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 6,
+        display: 'flex', alignItems: '', gap: 6,
         padding: '4px 12px',
         background: statusBg,
         border: `1px solid ${statusBorder}`,
