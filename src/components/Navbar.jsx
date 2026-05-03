@@ -122,7 +122,7 @@ export default function Navbar() {
         fontSize: 11, color: '#22c55e', letterSpacing: '0.1em',
       }}>
         <div style={{
-          width: 6, height: 6, borderRadius: '50',
+          width: 6, height: 6, borderRadius: '50%',
           background: '#22c55e', boxShadow: '0 0 8px #22c55e',
           animation: 'pulse 2s ease-in-out infinite',
         }} />
