@@ -37,7 +37,7 @@ export default function Navbar() {
   const isActive = (path) => location.pathname === path;
 
   /* ── Style variants ──────────────────────────────────────────── */
-  const isDark = !isHom
+  const isDark = !isHome;
   const bg = isDark
     ? 'rgba(6, 14, 28, 0.92)'
     : scrolled
