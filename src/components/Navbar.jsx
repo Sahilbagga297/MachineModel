@@ -106,7 +106,7 @@ export default function Navbar() {
               SmartMaintain
             </div>
             <div style={{ fontSize: 10, color: logoSubColor, letterSpacing: '0.2em', fontFamily: 'monospace' }}>
-              AI  PLATFORM
+              AI
             </div>
           </div>
         </div>
