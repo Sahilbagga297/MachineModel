@@ -100,7 +100,7 @@ export default function Navbar() {
             <div style={{
               fontSize: 16, fontWeight: 800,
               background: logoGradient,
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: '',
               letterSpacing: '-0.3px',
             }}>
               SmartMaintain
