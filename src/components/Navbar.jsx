@@ -42,7 +42,7 @@ export default function Navbar() {
     ? 'rgba(6, 14, 28, 0.92)'
     : scrolled
       ? 'rgba(255, 255, 255)'
-      : 'rgba(255, 255, 255, 0.6)';
+      : 'rgba(255, 255, )';
 
   const borderColor = isDark
     ? 'rgba(56, 189, 248, 0.12)'
